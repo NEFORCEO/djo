@@ -80,6 +80,7 @@ nav:
           - Query Parameters: en/features/query-parameters.md
           - Request Bodies: en/features/request-bodies.md
           - DRF Serializers: en/features/drf-serializers.md
+          - Response Schema: en/features/response-schema.md
           - Security Schemes: en/features/security.md
           - Error Responses: en/features/error-responses.md
       - Configuration: en/configuration.md
@@ -93,6 +94,7 @@ nav:
           - Query-параметры: ru/features/query-parameters.md
           - Тело запроса: ru/features/request-bodies.md
           - DRF-сериализаторы: ru/features/drf-serializers.md
+          - Схема ответа: ru/features/response-schema.md
           - Схемы авторизации: ru/features/security.md
           - Коды ошибок: ru/features/error-responses.md
       - Конфигурация: ru/configuration.md
