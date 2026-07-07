@@ -40,7 +40,7 @@ Python 3.10+, Django 5.2+.
 ## Installation
 
 ```console
-$ pip install django-api
+$ pip install djangoapi
 ```
 
 ## Example
