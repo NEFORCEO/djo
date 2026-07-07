@@ -1,0 +1,110 @@
+site_name: djo
+site_description: Drop-in interactive API docs for Django — Swagger UI, FastAPI-style, with zero decorators and zero extra dependencies
+site_url: https://neforceo.github.io/djo
+
+docs_dir: docs
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/lightbulb-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to system preference
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+  logo: media/django-icon.png
+  favicon: media/django-icon.png
+
+repo_name: NEFORCEO/djo
+repo_url: https://github.com/NEFORCEO/djo
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - djo: index.md
+  - English:
+      - Quick Start: en/quick-start.md
+      - Features:
+          - Overview: en/features/index.md
+          - Path Parameters: en/features/path-parameters.md
+          - Query Parameters: en/features/query-parameters.md
+          - Request Bodies: en/features/request-bodies.md
+          - DRF Serializers: en/features/drf-serializers.md
+          - Security Schemes: en/features/security.md
+          - Error Responses: en/features/error-responses.md
+      - Configuration: en/configuration.md
+      - How It Works: en/how-it-works.md
+      - Demo Project: en/demo-project.md
+  - Russian:
+      - Быстрый старт: ru/quick-start.md
+      - Возможности:
+          - Обзор: ru/features/index.md
+          - Path-параметры: ru/features/path-parameters.md
+          - Query-параметры: ru/features/query-parameters.md
+          - Тело запроса: ru/features/request-bodies.md
+          - DRF-сериализаторы: ru/features/drf-serializers.md
+          - Схемы авторизации: ru/features/security.md
+          - Коды ошибок: ru/features/error-responses.md
+      - Конфигурация: ru/configuration.md
+      - Как это работает: ru/how-it-works.md
+      - Демо-проект: ru/demo-project.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/NEFORCEO/djo
+  alternate:
+    - link: /
+      name: en - English
+    - link: /ru/
+      name: ru - Russian

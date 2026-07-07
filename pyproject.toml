@@ -51,6 +51,9 @@ dev = [
     "pytest-django>=4.9.0",
     "ruff>=0.15.15",
     "pre-commit>=4.0.0",
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "pymdown-extensions>=10.21.3",
 ]
 
 [project.urls]
@@ -74,6 +77,9 @@ dev = [
     "pytest>=8.0.0",
     "pytest-django>=4.9.0",
     "ruff>=0.15.15",
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "pymdown-extensions>=10.21.3",
 ]
 
 [tool.ruff]
