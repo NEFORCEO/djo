@@ -18,7 +18,7 @@
 
 ---
 
-**Documentation**: <a href="https://neforceo.github.io/djo/" target="_blank">https://neforceo.github.io/djo/</a>
+**Documentation**: <a href="https://djo.readthedocs.io" target="_blank">https://djo.readthedocs.io</a>
 
 **Source Code**: <a href="https://github.com/NEFORCEO/djo" target="_blank">https://github.com/NEFORCEO/djo</a>
 

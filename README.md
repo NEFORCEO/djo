@@ -18,6 +18,8 @@
 
 ---
 
+**Documentation**: <a href="https://djo.readthedocs.io" target="_blank">https://djo.readthedocs.io</a>
+
 **Source Code**: <a href="https://github.com/NEFORCEO/djo" target="_blank">https://github.com/NEFORCEO/djo</a>
 
 ---

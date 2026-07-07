@@ -1,6 +1,6 @@
 site_name: djo
 site_description: Drop-in interactive API docs for Django — Swagger UI, FastAPI-style, with zero decorators and zero extra dependencies
-site_url: https://neforceo.github.io/djo
+site_url: https://djo.readthedocs.io
 
 docs_dir: docs
 theme:

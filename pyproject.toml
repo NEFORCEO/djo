@@ -58,7 +58,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/NEFORCEO/djo"
-Documentation = "https://github.com/NEFORCEO/djo"
+Documentation = "https://djo.readthedocs.io"
 Repository = "https://github.com/NEFORCEO/djo"
 Issues = "https://github.com/NEFORCEO/djo/issues"
 
