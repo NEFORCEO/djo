@@ -5,14 +5,26 @@
     <em>Drop-in interactive API docs for Django — Swagger UI, FastAPI-style, with zero decorators and zero extra dependencies.</em>
 </p>
 <p align="center">
-<a href="https://github.com/NEFORCEO/djo" target="_blank">
-    <img src="https://img.shields.io/github/stars/NEFORCEO/djo?style=social" alt="GitHub Stars">
+<a href="https://github.com/NEFORCEO/djo/actions/workflows/publish.yml" target="_blank">
+    <img src="https://github.com/NEFORCEO/djo/actions/workflows/publish.yml/badge.svg" alt="Publish">
+</a>
+<a href="https://pypi.org/project/djo" target="_blank">
+    <img src="https://img.shields.io/pypi/v/djo?color=%2334D058&label=pypi%20package" alt="Package version">
 </a>
 <a href="https://www.python.org/" target="_blank">
-    <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python">
+    <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/NEFORCEO/djo/master/docs/endpoints/python.json" alt="Python">
 </a>
 <a href="https://www.djangoproject.com/" target="_blank">
     <img src="https://img.shields.io/badge/django-5.2%2B-0C4B33" alt="Django">
+</a>
+<a href="https://pypi.org/project/djo" target="_blank">
+    <img src="https://img.shields.io/pypi/dm/djo?color=%2334D058&label=downloads" alt="Monthly downloads">
+</a>
+<a href="https://github.com/NEFORCEO/djo/blob/master/LICENSE" target="_blank">
+    <img src="https://img.shields.io/github/license/NEFORCEO/djo?color=%2334D058" alt="License">
+</a>
+<a href="https://github.com/NEFORCEO/djo" target="_blank">
+    <img src="https://img.shields.io/github/stars/NEFORCEO/djo?style=social" alt="GitHub Stars">
 </a>
 </p>
 
