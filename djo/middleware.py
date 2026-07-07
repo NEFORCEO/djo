@@ -15,13 +15,13 @@ class DjangoAPIMiddleware:
 
     Installed automatically by `DjangoAPIConfig.ready()` — that's what
     lets the whole package work from a single `INSTALLED_APPS` entry
-    with no urls.py changes. Override the paths via a `DJANGOAPI` dict
-    in settings.py, e.g. `DJANGOAPI = {"DOCS_URL": "/api/docs"}`.
+    with no urls.py changes. Override the paths via a `DJO` dict
+    in settings.py, e.g. `DJO = {"DOCS_URL": "/api/docs"}`.
     """
 
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
         self.get_response = get_response
-        config = getattr(settings, "DJANGOAPI", {})
+        config = getattr(settings, "DJO", {})
         self.docs_url = config.get("DOCS_URL", "/docs")
         self.openapi_url = config.get("OPENAPI_URL", "/openapi.json")
 

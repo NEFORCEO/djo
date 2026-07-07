@@ -148,10 +148,10 @@ def generate_openapi_schema() -> dict[str, Any]:
 
     No decorators or serializers required — paths, path parameters and
     HTTP methods are all inferred from `urlpatterns` and the views they
-    point to. Override title/version/description via a `DJANGOAPI` dict
+    point to. Override title/version/description via a `DJO` dict
     in settings.py.
     """
-    config = getattr(settings, "DJANGOAPI", {})
+    config = getattr(settings, "DJO", {})
     paths: dict[str, Any] = {}
 
     for path, url_pattern in discover_endpoints():

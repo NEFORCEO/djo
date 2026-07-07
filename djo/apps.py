@@ -8,7 +8,7 @@ from .types import MIDDLEWARE_PATH
 
 class DjangoAPIConfig(AppConfig):
     """
-    Registers djangoapi and self-installs its middleware.
+    Registers djo and self-installs its middleware.
 
     Django only calls `ready()` once, during `django.setup()` — which
     always runs before `load_middleware()` builds the request/response
@@ -18,8 +18,8 @@ class DjangoAPIConfig(AppConfig):
     """
 
     default_auto_field = "django.db.models.BigAutoField"
-    name = "djangoapi"
-    verbose_name = "DjangoAPI"
+    name = "djo"
+    verbose_name = "Djo"
 
     def ready(self) -> None:
         middleware = list(settings.MIDDLEWARE)

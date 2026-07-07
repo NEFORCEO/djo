@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "djangoapi"
+name = "djo"
 version = "0.1.0"
 description = "Drop-in interactive API docs for Django — Swagger UI, FastAPI-style, with zero decorators and zero extra dependencies"
 readme = "README.md"
@@ -54,17 +54,17 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/NEFORCEO/djangoapi"
-Documentation = "https://github.com/NEFORCEO/djangoapi"
-Repository = "https://github.com/NEFORCEO/djangoapi"
-Issues = "https://github.com/NEFORCEO/djangoapi/issues"
+Homepage = "https://github.com/NEFORCEO/djo"
+Documentation = "https://github.com/NEFORCEO/djo"
+Repository = "https://github.com/NEFORCEO/djo"
+Issues = "https://github.com/NEFORCEO/djo/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["djangoapi"]
+packages = ["djo"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/djangoapi",
+    "/djo",
     "/README.md",
     "/LICENSE",
 ]

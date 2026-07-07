@@ -25,4 +25,4 @@ FIELD_ACCESS_RE = re.compile(
 )
 
 
-MIDDLEWARE_PATH = "djangoapi.middleware.DjangoAPIMiddleware"
+MIDDLEWARE_PATH = "djo.middleware.DjangoAPIMiddleware"
