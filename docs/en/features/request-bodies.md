@@ -61,7 +61,7 @@ produces:
 }
 ```
 
-Field types are always `string` in this fallback path — without a serializer or type hints, djo has no reliable way to know a field is actually numeric or boolean. If you need accurate types, declare a DRF `serializer_class` instead.
+Field types are always `string` in this fallback path — without a serializer or a typed signature, djo has no reliable way to know a field is actually numeric or boolean. If you need accurate types, declare a DRF `serializer_class` or add type annotations to the handler's parameters instead.
 
 ## No body access, no `requestBody`
 
