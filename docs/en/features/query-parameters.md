@@ -1,6 +1,24 @@
 # Query Parameters
 
-djo reads the handler's own source for `request.GET` access and turns it into OpenAPI query parameters — including type and required-ness.
+djo infers query parameters two ways, preferring the first when both are present: a typed handler signature, or `request.GET` access read straight from the handler's own source.
+
+## Typed handler signatures
+
+Any extra handler parameter beyond `request`/`self`/path parameters that carries a plain type annotation is read directly — no regex, no guessing:
+
+```python
+def create_user_typed(request, name: str = "", age: int = 0, active: bool = True):
+    ...
+```
+
+For `GET`/`DELETE` handlers, these become query parameters; a parameter is `required` when it has no default value. Supported annotations are `str`, `int`, `float`, `bool`, `list`/`list[T]`, `dict`, `uuid.UUID`, `datetime.date`, `datetime.datetime`, `decimal.Decimal`, and `Optional[T]`/`T | None`.
+
+!!! warning "Django doesn't bind these values for you"
+    Declaring `name: str` here only tells djo what to put in the docs — Django's own dispatcher never populates extra view parameters from the query string or request body (that's not how `path()` routing works). The handler still has to read `request.GET`/`request.data` itself; the annotation is just a precise, explicit type signal for the schema.
+
+## Falling back to source access
+
+Without a typed signature, djo reads the handler's own source for `request.GET` access and turns it into OpenAPI query parameters — including type and required-ness.
 
 ```python
 def search_users(request):
