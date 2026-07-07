@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', views.list_users),
     path('users/create/', views.create_user),
+    path('users/create-typed/', views.create_user_typed),
     path('users/search/', views.search_users),
     path('users/protected/', views.ProtectedUserList.as_view()),
     path('users/lookup/<int:pk>/', views.get_user_or_404),
