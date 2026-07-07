@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, JsonResponse
 from django.views import View
@@ -18,6 +20,9 @@ class UserDetail(View):
 
     def get(self, request, pk):
         return JsonResponse({"id": pk, "name": "Ada"})
+
+    def post(self, request, pk):
+        return JsonResponse({"id": pk, "created": True})
 
     def put(self, request, pk):
         return JsonResponse({"id": pk, "updated": True})
@@ -45,3 +50,10 @@ class ProtectedUserList(LoginRequiredMixin, View):
 
     def get(self, request):
         return JsonResponse({"users": [{"id": 1, "name": "Ada"}]})
+
+
+def create_user_typed(request, name: str = "", age: int = 0, active: bool = True):
+    name = request.GET.get("name", name)
+    age = int(request.GET.get("age", age))
+    active = request.GET.get("active", str(active)).lower() == "true"
+    return JsonResponse({"id": uuid4(), "name": name, "age": age, "active": active}, status=201)
