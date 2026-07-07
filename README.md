@@ -29,7 +29,11 @@ Key features:
 - **Zero config** — the only thing you touch is `INSTALLED_APPS`. No `urls.py` changes, no middleware to wire up by hand.
 - **Automatic** — paths, path parameters and HTTP methods are all inferred by walking the URLconf and the views it points to. Nothing to decorate, nothing to register.
 - **Typed path params** — `<int:pk>`, `<uuid:token>`, `<slug:handle>` are mapped to real OpenAPI types straight from Django's own path converters.
+- **Query params** — `request.GET.get("page", 1)` / `request.GET["tag"]` style access is picked up automatically, with type and required-ness inferred from how it's read.
 - **Smart request bodies** — instead of a blank `{}`, djo reads a handler's source for `request.POST.get(...)` / `request.data[...]` style access and pre-fills the example with the fields it actually uses.
+- **DRF serializer aware** — if a view declares `serializer_class`, djo reads the real fields straight off it (types, `required`, `read_only`/`write_only`, `choices`) instead of guessing from source.
+- **Auth-aware** — `permission_classes`, `authentication_classes` and `LoginRequiredMixin` are detected automatically and surfaced as a Swagger **Authorize** button (cookie or bearer, depending on what the view uses).
+- **Error responses** — status codes referenced via `status=404`, `status.HTTP_400_BAD_REQUEST`, or raised via `Http404`/DRF exceptions are added to the schema alongside the success response.
 - **Interactive** — "Try it out" works against your real endpoints out of the box; the CSRF cookie is forwarded automatically for unsafe methods.
 - **No extra dependencies** — pure Django. No Pydantic, no DRF required (though it plays nicely with DRF views if you have them).
 
@@ -90,7 +94,8 @@ DJO = {
 - The middleware intercepts those two paths ahead of normal URL resolution; every other request passes straight through untouched.
 - `djo/generator.py` walks `get_resolver().url_patterns` recursively, resolving `path()` converters into OpenAPI parameter types and reading each view's docstring for a summary.
 - HTTP methods are inferred from class-based views (Django's `View` or DRF's `APIView`/`api_view`) by checking which handlers they actually implement; plain function-based views default to `GET`.
-- Request bodies are inferred by a light, best-effort read of the handler's own source — no execution, no imports of your models, just pattern matching for body access.
+- Request/response bodies prefer a view's declared `serializer_class` (its fields are read directly, nothing is sent over the network) and fall back to a light, best-effort read of the handler's own source — pattern matching for body/query access, no execution of your views.
+- Auth requirements and error status codes are inferred the same way: straight off class attributes for permissions/authentication, and off the handler's source for raised exceptions and explicit status codes.
 
 ## Try the demo project
 
