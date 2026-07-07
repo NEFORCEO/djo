@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import datetime
+import decimal
 import re
+import uuid
 from typing import Any
 
 ANGLE_PARAM_RE = re.compile(r"<(?:[^:<>]+:)?(\w+)>")
@@ -73,3 +76,22 @@ EXCEPTION_STATUS_MAP: dict[str, int] = {
 RAISE_EXCEPTION_RE = re.compile(rf"\braise\s+({'|'.join(EXCEPTION_STATUS_MAP)})\b")
 
 MIDDLEWARE_PATH = "djo.middleware.DjangoAPIMiddleware"
+
+ANNOTATION_SCHEMAS: dict[Any, dict[str, Any]] = {
+    str: {"type": "string"},
+    int: {"type": "integer"},
+    float: {"type": "number"},
+    bool: {"type": "boolean"},
+    list: {"type": "array", "items": {"type": "string"}},
+    dict: {"type": "object"},
+    uuid.UUID: {"type": "string", "format": "uuid"},
+    datetime.date: {"type": "string", "format": "date"},
+    datetime.datetime: {"type": "string", "format": "date-time"},
+    decimal.Decimal: {"type": "number"},
+}
+
+JSON_RESPONSE_CALLS = ("JsonResponse", "Response")
+
+INT_NAME_RE = re.compile(r"^(pk|id)$|_id$")
+
+BOOL_NAME_PREFIXES = ("is_", "has_")
