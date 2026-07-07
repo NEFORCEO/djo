@@ -1,0 +1,92 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-api"
+version = "0.1.0"
+description = "Drop-in interactive API docs for Django — Swagger UI, FastAPI-style, with zero decorators and zero extra dependencies"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "NEFORCEO", email = "n7for8572@gmail.com"},
+]
+maintainers = [
+    {name = "NEFORCEO", email = "n7for8572@gmail.com"},
+]
+keywords = [
+    "django",
+    "openapi",
+    "swagger",
+    "swagger-ui",
+    "api",
+    "docs",
+    "rest",
+    "autodoc"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "django>=5.2.15",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-django>=4.9.0",
+    "ruff>=0.15.15",
+    "pre-commit>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/NEFORCEO/djangoapi"
+Documentation = "https://github.com/NEFORCEO/djangoapi"
+Repository = "https://github.com/NEFORCEO/djangoapi"
+Issues = "https://github.com/NEFORCEO/djangoapi/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["djangoapi"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/djangoapi",
+    "/README.md",
+    "/LICENSE",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-django>=4.9.0",
+    "ruff>=0.15.15",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+]
+testpaths = ["tests"]
