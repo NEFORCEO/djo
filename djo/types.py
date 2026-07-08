@@ -11,11 +11,15 @@ ANGLE_PARAM_RE = re.compile(r"<(?:[^:<>]+:)?(\w+)>")
 SLASH_RUN_RE = re.compile(r"/{2,}")
 
 CONVERTER_SCHEMAS: dict[str, dict[str, Any]] = {
-    "IntConverter": {"type": "integer"},
-    "StringConverter": {"type": "string"},
-    "SlugConverter": {"type": "string"},
-    "UUIDConverter": {"type": "string", "format": "uuid"},
-    "PathConverter": {"type": "string"},
+    "IntConverter": {"type": "integer", "example": 1},
+    "StringConverter": {"type": "string", "example": "example"},
+    "SlugConverter": {"type": "string", "example": "example-slug"},
+    "UUIDConverter": {
+        "type": "string",
+        "format": "uuid",
+        "example": "550e8400-e29b-41d4-a716-446655440000",
+    },
+    "PathConverter": {"type": "string", "example": "example/path"},
 }
 
 HTTP_METHOD_NAMES = ("get", "post", "put", "patch", "delete")
@@ -28,6 +32,16 @@ FIELD_ACCESS_RE = re.compile(
 
 QUERY_ACCESS_RE = re.compile(
     r"""request\.GET(\.get\(|\[)\s*['"](\w+)['"](?:\s*,\s*([^)\]]+))?"""
+)
+
+FILE_ACCESS_RE = re.compile(r"""request\.FILES\s*(?:\.get\(\s*|\[)\s*['"](\w+)['"]""")
+
+HEADER_ACCESS_RE = re.compile(
+    r"""request\.headers(\.get\(|\[)\s*['"]([\w-]+)['"](?:\s*,\s*([^)\]]+))?"""
+)
+
+COOKIE_ACCESS_RE = re.compile(
+    r"""request\.COOKIES(\.get\(|\[)\s*['"](\w+)['"](?:\s*,\s*([^)\]]+))?"""
 )
 
 DRF_FIELD_SCHEMAS: dict[str, dict[str, Any]] = {
