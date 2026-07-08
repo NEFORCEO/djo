@@ -7,8 +7,10 @@ djo никогда не исполняет ваши view и ничего не о
 | Пути и HTTP-методы | `ROOT_URLCONF` / `View.as_view()` / DRF `APIView` | [Path-параметры](path-parameters.md) |
 | Path-параметры | Конвертеры Django `path()` (`<int:pk>`, `<uuid:token>`, ...) | [Path-параметры](path-parameters.md) |
 | Query-параметры | Типизированная сигнатура хендлера, либо `request.GET.get(...)` / `request.GET[...]` в исходнике | [Query-параметры](query-parameters.md) |
-| Тело запроса | `serializer_class`, типизированная сигнатура хендлера, либо обращения к `request.POST` / `request.data` в исходнике | [Тело запроса](request-bodies.md) |
-| Тело ответа | `serializer_class`, либо литерал `return JsonResponse({...})` в исходнике | [Схема ответа](response-schema.md) |
+| Заголовки и куки | Обращения к `request.headers`/`request.COOKIES` в исходнике | [Заголовки и куки](headers-cookies.md) |
+| Тело запроса | `serializer_class`, типизированная сигнатура хендлера, обращения к `request.POST`/`request.data`, либо `request.FILES` для загрузки файлов | [Тело запроса](request-bodies.md) |
+| Тело ответа и примеры | `serializer_class`, либо литерал `return JsonResponse({...})` в исходнике (реальные значения литералов становятся `example`) | [Схема ответа](response-schema.md) |
+| Summary и description | docstring хендлера — первая строка как summary, остальное как markdown-описание | [Как это работает](../how-it-works.md) |
 | Требования авторизации | `permission_classes`, `authentication_classes`, `LoginRequiredMixin` | [Схемы авторизации](security.md) |
 | Коды ошибок | `status=404`, `status.HTTP_400_BAD_REQUEST`, поднятые исключения | [Коды ошибок](error-responses.md) |
 
