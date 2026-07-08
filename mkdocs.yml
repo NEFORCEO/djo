@@ -78,6 +78,7 @@ nav:
           - Overview: en/features/index.md
           - Path Parameters: en/features/path-parameters.md
           - Query Parameters: en/features/query-parameters.md
+          - Headers & Cookies: en/features/headers-cookies.md
           - Request Bodies: en/features/request-bodies.md
           - DRF Serializers: en/features/drf-serializers.md
           - Response Schema: en/features/response-schema.md
@@ -92,6 +93,7 @@ nav:
           - Обзор: ru/features/index.md
           - Path-параметры: ru/features/path-parameters.md
           - Query-параметры: ru/features/query-parameters.md
+          - Заголовки и куки: ru/features/headers-cookies.md
           - Тело запроса: ru/features/request-bodies.md
           - DRF-сериализаторы: ru/features/drf-serializers.md
           - Схема ответа: ru/features/response-schema.md
