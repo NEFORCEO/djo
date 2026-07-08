@@ -600,6 +600,7 @@ def generate_openapi_schema() -> dict[str, Any]:
                 file_fields = _file_upload_fields(source)
                 if file_fields:
                     schema = dict(body_schema) if body_schema is not None else {"type": "object"}
+                    schema.pop("example", None)
                     schema["type"] = "object"
                     properties = dict(schema.get("properties", {}))
                     for name in file_fields:
