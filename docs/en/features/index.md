@@ -7,8 +7,10 @@ djo never executes your views and never sends anything over the network to build
 | Paths & HTTP methods | `ROOT_URLCONF` / `View.as_view()` / DRF `APIView` | [Path Parameters](path-parameters.md) |
 | Path parameters | Django's `path()` converters (`<int:pk>`, `<uuid:token>`, ...) | [Path Parameters](path-parameters.md) |
 | Query parameters | A typed handler signature, or `request.GET.get(...)` / `request.GET[...]` in source | [Query Parameters](query-parameters.md) |
-| Request bodies | A `serializer_class`, a typed handler signature, or `request.POST` / `request.data` access in source | [Request Bodies](request-bodies.md) |
-| Response bodies | A `serializer_class`, or a literal `return JsonResponse({...})` in source | [Response Schema](response-schema.md) |
+| Header & cookie parameters | `request.headers`/`request.COOKIES` access in source | [Headers & Cookies](headers-cookies.md) |
+| Request bodies | A `serializer_class`, a typed handler signature, `request.POST`/`request.data` access, or `request.FILES` for uploads | [Request Bodies](request-bodies.md) |
+| Response bodies & examples | A `serializer_class`, or a literal `return JsonResponse({...})` in source (real literal values become `example`s) | [Response Schema](response-schema.md) |
+| Summaries & descriptions | The handler's docstring — first line as summary, the rest as markdown description | [How It Works](../how-it-works.md) |
 | Auth requirements | `permission_classes`, `authentication_classes`, `LoginRequiredMixin` | [Security Schemes](security.md) |
 | Error responses | `status=404`, `status.HTTP_400_BAD_REQUEST`, raised exceptions | [Error Responses](error-responses.md) |
 
