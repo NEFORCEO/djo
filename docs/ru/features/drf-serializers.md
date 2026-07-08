@@ -52,6 +52,14 @@ class ProductListCreateView(ListCreateAPIView):
 | `PrimaryKeyRelatedField` | `{"type": "integer"}` |
 | всё остальное | `{"type": "string"}` (по умолчанию) |
 
+`help_text` поля, если он задан, переносится прямо в `"description"` схемы:
+
+```python
+email = serializers.EmailField(help_text="Used for login and notifications.")
+```
+
+даёт `{"type": "string", "format": "email", "description": "Used for login and notifications."}`.
+
 ## Поля запроса и ответа
 
 djo строит из одного сериализатора две разные схемы:
