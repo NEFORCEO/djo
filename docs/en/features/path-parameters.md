@@ -16,20 +16,22 @@ produces:
   "name": "pk",
   "in": "path",
   "required": true,
-  "schema": { "type": "integer" }
+  "schema": { "type": "integer", "example": 1 }
 }
 ```
+
+Every converter's schema carries a fixed `example` value, so **Try it out** in Swagger UI starts with a plausible URL instead of an empty field.
 
 ## Supported converters
 
 | Django converter | OpenAPI schema |
 |---|---|
-| `int` | `{"type": "integer"}` |
-| `str` | `{"type": "string"}` |
-| `slug` | `{"type": "string"}` |
-| `uuid` | `{"type": "string", "format": "uuid"}` |
-| `path` | `{"type": "string"}` |
-| custom / unknown | `{"type": "string"}` (fallback) |
+| `int` | `{"type": "integer", "example": 1}` |
+| `str` | `{"type": "string", "example": "example"}` |
+| `slug` | `{"type": "string", "example": "example-slug"}` |
+| `uuid` | `{"type": "string", "format": "uuid", "example": "550e8400-e29b-41d4-a716-446655440000"}` |
+| `path` | `{"type": "string", "example": "example/path"}` |
+| custom / unknown | `{"type": "string"}` (fallback, no example) |
 
 ## `re_path()` routes
 
