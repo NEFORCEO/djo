@@ -16,20 +16,22 @@ urlpatterns = [
   "name": "pk",
   "in": "path",
   "required": true,
-  "schema": { "type": "integer" }
+  "schema": { "type": "integer", "example": 1 }
 }
 ```
+
+У схемы каждого конвертера есть фиксированное значение `example`, поэтому **Try it out** в Swagger UI сразу стартует с правдоподобного URL, а не с пустого поля.
 
 ## Поддерживаемые конвертеры
 
 | Конвертер Django | Схема OpenAPI |
 |---|---|
-| `int` | `{"type": "integer"}` |
-| `str` | `{"type": "string"}` |
-| `slug` | `{"type": "string"}` |
-| `uuid` | `{"type": "string", "format": "uuid"}` |
-| `path` | `{"type": "string"}` |
-| кастомный / неизвестный | `{"type": "string"}` (по умолчанию) |
+| `int` | `{"type": "integer", "example": 1}` |
+| `str` | `{"type": "string", "example": "example"}` |
+| `slug` | `{"type": "string", "example": "example-slug"}` |
+| `uuid` | `{"type": "string", "format": "uuid", "example": "550e8400-e29b-41d4-a716-446655440000"}` |
+| `path` | `{"type": "string", "example": "example/path"}` |
+| кастомный / неизвестный | `{"type": "string"}` (по умолчанию, без example) |
 
 ## Маршруты через `re_path()`
 
