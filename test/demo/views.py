@@ -57,3 +57,24 @@ def create_user_typed(request, name: str = "", age: int = 0, active: bool = True
     age = int(request.GET.get("age", age))
     active = request.GET.get("active", str(active)).lower() == "true"
     return JsonResponse({"id": uuid4(), "name": name, "age": age, "active": active}, status=201)
+
+
+class AvatarUpload(View):
+    """
+    Upload a user avatar.
+
+    Accepts a multipart form with the image file plus an optional caption.
+    The file is stored and its URL is returned.
+    """
+
+    def post(self, request):
+        avatar = request.FILES.get("avatar")
+        caption = request.POST.get("caption", "")
+        return JsonResponse({"filename": avatar.name if avatar else "", "caption": caption}, status=201)
+
+
+def whoami(request):
+    """Echo back the caller's API key and session, read from headers/cookies."""
+    api_key = request.headers.get("X-API-Key")
+    session = request.COOKIES.get("sessionid")
+    return JsonResponse({"api_key": api_key, "session": session})

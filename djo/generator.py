@@ -16,9 +16,12 @@ from .types import (
     BODY_MARKERS,
     BOOL_NAME_PREFIXES,
     CONVERTER_SCHEMAS,
+    COOKIE_ACCESS_RE,
     DRF_FIELD_SCHEMAS,
     EXCEPTION_STATUS_MAP,
     FIELD_ACCESS_RE,
+    FILE_ACCESS_RE,
+    HEADER_ACCESS_RE,
     HTTP_METHOD_NAMES,
     INT_NAME_RE,
     JSON_RESPONSE_CALLS,
@@ -103,6 +106,16 @@ def _summary(callback: Any) -> str:
     return getattr(target, "__name__", None) or type(target).__name__
 
 
+def _description(callback: Any) -> str | None:
+    """Docstring lines beyond the summary's first line, rendered as markdown by Swagger UI."""
+    target = _view_class(callback) or callback
+    doc = inspect.getdoc(target)
+    if not doc:
+        return None
+    rest = "\n".join(doc.strip().splitlines()[1:]).strip()
+    return rest or None
+
+
 def _handler_for_method(callback: Any, method: str) -> Any:
     """The concrete function that will run for this method — bound method on a CBV, or the callback itself."""
     view_class = _view_class(callback)
@@ -159,6 +172,9 @@ def _schema_from_serializer(
         choices = getattr(field, "choices", None)
         if choices:
             schema["enum"] = list(choices)
+        help_text = getattr(field, "help_text", None)
+        if help_text:
+            schema["description"] = str(help_text)
         properties[name] = schema
 
         if direction == "request" and getattr(field, "required", False):
@@ -303,6 +319,32 @@ def _query_parameters(callback: Any, method: str, path_param_names: set[str]) ->
     return parameters
 
 
+def _header_cookie_parameters(source: str) -> list[dict[str, Any]]:
+    """OpenAPI header/cookie parameters inferred from `request.headers`/`request.COOKIES` access."""
+    parameters = []
+    for location, pattern in (("header", HEADER_ACCESS_RE), ("cookie", COOKIE_ACCESS_RE)):
+        seen: set[str] = set()
+        for access, name, default in pattern.findall(source):
+            if name in seen:
+                continue
+            seen.add(name)
+            required = access == "["
+            parameters.append(
+                {
+                    "name": name,
+                    "in": location,
+                    "required": required,
+                    "schema": _infer_literal_schema(None if required else default or None),
+                }
+            )
+    return parameters
+
+
+def _file_upload_fields(source: str) -> list[str]:
+    """Field names read via `request.FILES` — signals a multipart file upload."""
+    return list(dict.fromkeys(FILE_ACCESS_RE.findall(source)))
+
+
 def _identifier_hint_schema(identifier: str) -> dict[str, Any] | None:
     """A schema guessed from a bare identifier's name (`pk`, `user_id`, `is_active`, ...)."""
     if INT_NAME_RE.search(identifier):
@@ -324,12 +366,15 @@ def _ast_value_schema(node: ast.expr, param_schemas: dict[str, dict[str, Any]]) 
     if isinstance(node, ast.Name) and node.id in param_schemas:
         return param_schemas[node.id]
     if isinstance(node, ast.Constant):
-        if isinstance(node.value, bool):
-            return {"type": "boolean"}
-        if isinstance(node.value, int):
-            return {"type": "integer"}
-        if isinstance(node.value, float):
-            return {"type": "number"}
+        value = node.value
+        if isinstance(value, bool):
+            return {"type": "boolean", "example": value}
+        if isinstance(value, int):
+            return {"type": "integer", "example": value}
+        if isinstance(value, float):
+            return {"type": "number", "example": value}
+        if isinstance(value, str):
+            return {"type": "string", "example": value}
         return {"type": "string"}
     if isinstance(node, (ast.List, ast.Tuple)):
         items = _ast_value_schema(node.elts[0], param_schemas) if node.elts else {"type": "string"}
@@ -530,7 +575,12 @@ def generate_openapi_schema() -> dict[str, Any]:
         path_item = paths.setdefault(path, {})
 
         for method in methods:
-            parameters = path_parameters + _query_parameters(callback, method, path_param_names)
+            source = _handler_source(callback, method)
+            parameters = (
+                path_parameters
+                + _query_parameters(callback, method, path_param_names)
+                + _header_cookie_parameters(source)
+            )
 
             operation: dict[str, Any] = {
                 "summary": _summary(callback),
@@ -540,11 +590,24 @@ def generate_openapi_schema() -> dict[str, Any]:
                     callback, method, serializer_class, mro_names, path_param_names
                 ),
             }
+            description = _description(callback)
+            if description:
+                operation["description"] = description
             if parameters:
                 operation["parameters"] = parameters
             if method in ("POST", "PUT", "PATCH"):
                 body_schema = _request_body_schema(callback, method, serializer_class, path_param_names)
-                if body_schema is not None:
+                file_fields = _file_upload_fields(source)
+                if file_fields:
+                    schema = dict(body_schema) if body_schema is not None else {"type": "object"}
+                    schema.pop("example", None)
+                    schema["type"] = "object"
+                    properties = dict(schema.get("properties", {}))
+                    for name in file_fields:
+                        properties[name] = {"type": "string", "format": "binary"}
+                    schema["properties"] = properties
+                    operation["requestBody"] = {"content": {"multipart/form-data": {"schema": schema}}}
+                elif body_schema is not None:
                     operation["requestBody"] = {"content": {"application/json": {"schema": body_schema}}}
             if security:
                 operation["security"] = [{scheme: []} for scheme in security]

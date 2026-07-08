@@ -63,6 +63,31 @@ produces:
 
 Field types are always `string` in this fallback path — without a serializer or a typed signature, djo has no reliable way to know a field is actually numeric or boolean. If you need accurate types, declare a DRF `serializer_class` or add type annotations to the handler's parameters instead.
 
+## File uploads
+
+If the handler reads `request.FILES`, djo documents the field as a binary upload and switches the whole `requestBody` to `multipart/form-data` — file fields and any regular fields read from `request.POST` are merged into the same form schema:
+
+```python
+class AvatarUpload(View):
+    """
+    Upload a user avatar.
+
+    Accepts a multipart form with the image file plus an optional caption.
+    The file is stored and its URL is returned.
+    """
+
+    def post(self, request):
+        avatar = request.FILES.get("avatar")
+        caption = request.POST.get("caption", "")
+        return JsonResponse({"filename": avatar.name if avatar else "", "caption": caption}, status=201)
+```
+
+Expanded in Swagger UI — note the file picker for `avatar` and the multiline docstring rendered as the operation's markdown description:
+
+![File upload](../../media/file-upload.png)
+
+`request.FILES["avatar"]` (bracket access) works the same way as `.get(...)` here — either is enough to mark the field as `{"type": "string", "format": "binary"}`.
+
 ## No body access, no `requestBody`
 
 If a handler never touches the request body, djo **omits `requestBody` entirely** rather than emitting a misleading empty `{}` schema — this was the whole point of moving past a naive "every POST has a body" assumption:
