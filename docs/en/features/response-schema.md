@@ -32,6 +32,20 @@ produces:
 
 A list literal (`return JsonResponse([{...}, ...])`) becomes an `array` of that same object schema.
 
+## Real example values, not just types
+
+When a value in the literal is itself a literal (`"Ada"`, `3`, `True`, ...), djo keeps the actual value as the schema's `"example"` — not just its type. Swagger UI's **Example Value** tab then shows real, representative data instead of a generic `"string"`/`0` placeholder:
+
+```python
+def create_user(request):
+    """Create a new user."""
+    return JsonResponse({"id": 3, "name": "New user"}, status=201)
+```
+
+![Real example values](../../media/response-examples.png)
+
+Values that aren't literals — a variable, an attribute, a function call like `uuid4()` — have no real value to read at analysis time, so only their inferred type is used.
+
 ## How field types are guessed
 
 | Value expression | Inferred type | Example |
