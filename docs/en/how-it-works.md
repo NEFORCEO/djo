@@ -49,6 +49,7 @@ def generate_openapi_schema() -> dict:
 
 - **Path parameters** from `RoutePattern.converters` (empty for `re_path()`).
 - **HTTP methods** from which of `get`/`post`/`put`/`patch`/`delete` the view class implements (function views default to `GET`).
+- **Summary and description** from the handler's docstring — the first line becomes the operation `summary`, the rest becomes `description`, which Swagger UI renders as markdown.
 - **Query parameters**, **request/response bodies**, **security requirements**, and **error responses** — each covered in its own page under [Features](features/index.md).
 
 Nothing here executes your view code. Bodies and errors are inferred by reading the concrete handler's source with `inspect.getsource()` and matching a handful of regexes against it; serializers and permission classes are read as static class attributes.
