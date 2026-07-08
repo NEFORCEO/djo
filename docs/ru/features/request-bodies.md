@@ -63,6 +63,31 @@ def create_user(request):
 
 В этом резервном варианте типы полей всегда `string` — без сериализатора или типизированной сигнатуры у djo нет надёжного способа узнать, что поле на самом деле числовое или булево. Если нужны точные типы — объявите DRF `serializer_class` или добавьте типовые аннотации к параметрам хендлера.
 
+## Загрузка файлов
+
+Если хендлер читает `request.FILES`, djo документирует поле как бинарную загрузку и переключает весь `requestBody` на `multipart/form-data` — файловые поля и обычные поля из `request.POST` объединяются в одну form-схему:
+
+```python
+class AvatarUpload(View):
+    """
+    Upload a user avatar.
+
+    Accepts a multipart form with the image file plus an optional caption.
+    The file is stored and its URL is returned.
+    """
+
+    def post(self, request):
+        avatar = request.FILES.get("avatar")
+        caption = request.POST.get("caption", "")
+        return JsonResponse({"filename": avatar.name if avatar else "", "caption": caption}, status=201)
+```
+
+Развёрнуто в Swagger UI — обратите внимание на выбор файла для `avatar` и многострочный docstring, отрендеренный как markdown-описание операции:
+
+![Загрузка файла](../../media/file-upload.png)
+
+`request.FILES["avatar"]` (доступ через `[]`) работает так же, как `.get(...)` — любого из них достаточно, чтобы пометить поле как `{"type": "string", "format": "binary"}`.
+
 ## Нет обращения к телу — нет `requestBody`
 
 Если хендлер вообще не трогает тело запроса, djo **полностью пропускает `requestBody`**, а не выводит вводящую в заблуждение пустую схему `{}` — именно в этом был смысл отказа от наивного предположения "у каждого POST есть тело":
