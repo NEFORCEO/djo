@@ -52,6 +52,14 @@ Note what happened automatically:
 | `PrimaryKeyRelatedField` | `{"type": "integer"}` |
 | anything else | `{"type": "string"}` (fallback) |
 
+A field's `help_text`, if set, is carried straight into the schema's `"description"`:
+
+```python
+email = serializers.EmailField(help_text="Used for login and notifications.")
+```
+
+produces `{"type": "string", "format": "email", "description": "Used for login and notifications."}`.
+
 ## Request vs. response fields
 
 djo builds two different schemas from the same serializer:
