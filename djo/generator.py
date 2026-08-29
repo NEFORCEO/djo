@@ -6,10 +6,10 @@ import textwrap
 from http import HTTPStatus
 from typing import Any, Literal, Union, get_args, get_origin
 
-from django.conf import settings
 from django.urls import get_resolver
 from django.urls.resolvers import RoutePattern, URLPattern, URLResolver
 
+from .config import config as _djo_config
 from .types import (
     ANGLE_PARAM_RE,
     ANNOTATION_SCHEMAS,
@@ -558,7 +558,7 @@ def generate_openapi_schema() -> dict[str, Any]:
     own source. Override title/version/description via a `DJO` dict in
     settings.py.
     """
-    config = getattr(settings, "DJO", {})
+    config = _djo_config()
     paths: dict[str, Any] = {}
     used_security_schemes: set[str] = set()
 

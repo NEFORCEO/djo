@@ -11,11 +11,17 @@ class DjangoAPIConfig(AppConfig):
 
     def ready(self) -> None:
         middleware = list(settings.MIDDLEWARE)
-        if MIDDLEWARE_PATH not in middleware:
-            settings.MIDDLEWARE = [MIDDLEWARE_PATH, *middleware]
+        if MIDDLEWARE_PATH in middleware:
+            return
+        try:
+            index = middleware.index(SECURITY_MIDDLEWARE_PATH) + 1
+        except ValueError:
+            index = 0
+        middleware.insert(index, MIDDLEWARE_PATH)
+        settings.MIDDLEWARE = middleware
 ```
 
-Django calls `AppConfig.ready()` exactly once, during `django.setup()` — and `django.setup()` always completes *before* `get_wsgi_application()` / `get_asgi_application()` call `load_middleware()` to build the request/response chain. That ordering is what lets `djo` prepend its own middleware to `settings.MIDDLEWARE` at import time, purely from being listed in `INSTALLED_APPS` — no `urls.py` edits, no manual `MIDDLEWARE` entry.
+Django calls `AppConfig.ready()` exactly once, during `django.setup()` — and `django.setup()` always completes *before* `get_wsgi_application()` / `get_asgi_application()` call `load_middleware()` to build the request/response chain. That ordering is what lets `djo` insert its own middleware into `settings.MIDDLEWARE` at import time, purely from being listed in `INSTALLED_APPS` — no `urls.py` edits, no manual `MIDDLEWARE` entry. It goes directly after `SecurityMiddleware` (or at the front if that isn't installed) so HTTPS redirects and security headers still cover `/docs`.
 
 ## 2. The middleware itself
 
@@ -23,18 +29,26 @@ Django calls `AppConfig.ready()` exactly once, during `django.setup()` — and `
 # djo/middleware.py
 class DjangoAPIMiddleware:
     def __call__(self, request):
-        path = request.path.rstrip("/") or "/"
+        path = _normalize(request.path)
 
         if path == self.docs_url:
-            return HttpResponse(get_swagger_html(...), content_type="text/html")
-
+            return self._serve(request, self._docs)
         if path == self.openapi_url:
-            return JsonResponse(generate_openapi_schema(), ...)
-
+            return self._serve(request, self._openapi)
         return self.get_response(request)
+
+    def _serve(self, request, handler):
+        if not is_enabled():                    # DJO["ENABLED"], defaults to settings.DEBUG
+            return self.get_response(request)
+        if request.method not in ("GET", "HEAD"):
+            return HttpResponseNotAllowed(("GET", "HEAD"))
+        gate = get_gate()                        # optional DJO["GATE"] callback
+        if gate is not None and not gate(request):
+            return self.get_response(request)
+        return handler(request)
 ```
 
-Because it's prepended, it runs first and intercepts `/docs` and `/openapi.json` before Django's normal URL resolution ever sees them. Every other request passes straight through, untouched. One consequence: these two paths never show up as "discovered" API endpoints in the generated schema — they're handled entirely outside the URLconf walk.
+It runs near the top of the chain and intercepts `/docs` and `/openapi.json` before Django's normal URL resolution ever sees them — but only for safe methods, only when enabled, and only when `GATE` allows it. Every other request, and every gated-out one, passes straight through untouched. One consequence: these two paths never show up as "discovered" API endpoints in the generated schema — they're handled entirely outside the URLconf walk.
 
 ## 3. Schema generation
 

@@ -91,6 +91,30 @@ RAISE_EXCEPTION_RE = re.compile(rf"\braise\s+({'|'.join(EXCEPTION_STATUS_MAP)})\
 
 MIDDLEWARE_PATH = "djo.middleware.DjangoAPIMiddleware"
 
+SECURITY_MIDDLEWARE_PATH = "django.middleware.security.SecurityMiddleware"
+
+# Swagger UI assets. Pinned to an exact version with Subresource Integrity
+# hashes so a compromised CDN can't swap the payload; override the URLs (and,
+# if you self-host a different build, the matching SRI hashes) via the `DJO`
+# dict — see djo.swagger.get_swagger_html.
+SWAGGER_UI_VERSION = "5.11.0"
+SWAGGER_CSS_URL = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{SWAGGER_UI_VERSION}/swagger-ui.css"
+SWAGGER_BUNDLE_JS_URL = (
+    f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{SWAGGER_UI_VERSION}/swagger-ui-bundle.js"
+)
+SWAGGER_PRESET_JS_URL = (
+    f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{SWAGGER_UI_VERSION}/swagger-ui-standalone-preset.js"
+)
+SWAGGER_CSS_SRI = (
+    "sha512-CUrU8jW2FzbeOhVlOTweMpj7bkllUqGepjvth3oj9EZdDscEb6W7sz+zpbRLVBuS/y3dBsRSuDpeY5aG5mzieQ=="
+)
+SWAGGER_BUNDLE_JS_SRI = (
+    "sha512-hSZOpml815hXtcPhOSV9IotBOTxeGieOTRPdTIuWBNNYx8zyUhEgRYDlxnGL6WCnhV/iB8OcvEVXyWtT4lf3uQ=="
+)
+SWAGGER_PRESET_JS_SRI = (
+    "sha512-EbhIdguft3zBqYIGe6VMR2lUjGYBnCM5Y5jfwgYnFhOGu4A7v8IfX4pGp29D8vxVK/eOW6E41GxQIdJHEmce7g=="
+)
+
 ANNOTATION_SCHEMAS: dict[Any, dict[str, Any]] = {
     str: {"type": "string"},
     int: {"type": "integer"},

@@ -106,10 +106,37 @@ DJO = {
 }
 ```
 
+### Enabling in production
+
+`/docs` and `/openapi.json` expose your whole API surface — paths, inferred request bodies, auth requirements, error codes. **`ENABLED` defaults to `settings.DEBUG`**, so a plain install never serves them on a production deployment by accident. Turn them on explicitly, ideally behind your own auth check:
+
+```python
+DJO = {
+    "ENABLED": True,
+    "GATE": "myapp.docs.is_staff",  # def is_staff(request) -> bool
+}
+```
+
+`GATE` (a callable or dotted import path) runs on every docs request; a falsy return makes djo fall through as if it weren't installed.
+
+### Self-hosting Swagger UI
+
+By default the Swagger UI assets load from jsDelivr, pinned to an exact version and verified with Subresource Integrity hashes. For offline or strict-CSP deployments, point them at your own copies:
+
+```python
+DJO = {
+    "SWAGGER_CSS_URL": "/static/swagger-ui/swagger-ui.css",
+    "SWAGGER_JS_URL": "/static/swagger-ui/swagger-ui-bundle.js",
+    "SWAGGER_PRESET_JS_URL": "/static/swagger-ui/swagger-ui-standalone-preset.js",
+}
+```
+
+Overriding a URL drops its bundled SRI hash; pass `SWAGGER_CSS_SRI` / `SWAGGER_JS_SRI` / `SWAGGER_PRESET_JS_SRI` to keep integrity checks on your own assets.
+
 ## How it works
 
-- `DjangoAPIConfig.ready()` prepends `djo.middleware.DjangoAPIMiddleware` to `settings.MIDDLEWARE` the moment the app is loaded — before Django builds its middleware chain — which is what lets a single `INSTALLED_APPS` entry serve `/docs` and `/openapi.json` with no `urls.py` changes.
-- The middleware intercepts those two paths ahead of normal URL resolution; every other request passes straight through untouched.
+- `DjangoAPIConfig.ready()` inserts `djo.middleware.DjangoAPIMiddleware` into `settings.MIDDLEWARE` the moment the app is loaded — before Django builds its middleware chain — which is what lets a single `INSTALLED_APPS` entry serve `/docs` and `/openapi.json` with no `urls.py` changes. It goes right after `SecurityMiddleware` (or at the front if that isn't installed), so HTTPS redirects and security headers still apply to the docs page.
+- The middleware intercepts those two paths ahead of normal URL resolution, but only for safe HTTP methods, only when `ENABLED` (default: `settings.DEBUG`), and only when the optional `GATE` callback allows it; every other request — and every gated-out one — passes straight through untouched.
 - `djo/generator.py` walks `get_resolver().url_patterns` recursively, resolving `path()` converters into OpenAPI parameter types and reading each view's docstring for a summary.
 - HTTP methods are inferred from class-based views (Django's `View` or DRF's `APIView`/`api_view`) by checking which handlers they actually implement; plain function-based views default to `GET`.
 - Request/response bodies prefer a view's declared `serializer_class` (its fields are read directly, nothing is sent over the network) and fall back to a light, best-effort read of the handler's own source — pattern matching for body/query access, no execution of your views.

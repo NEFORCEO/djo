@@ -11,11 +11,17 @@ class DjangoAPIConfig(AppConfig):
 
     def ready(self) -> None:
         middleware = list(settings.MIDDLEWARE)
-        if MIDDLEWARE_PATH not in middleware:
-            settings.MIDDLEWARE = [MIDDLEWARE_PATH, *middleware]
+        if MIDDLEWARE_PATH in middleware:
+            return
+        try:
+            index = middleware.index(SECURITY_MIDDLEWARE_PATH) + 1
+        except ValueError:
+            index = 0
+        middleware.insert(index, MIDDLEWARE_PATH)
+        settings.MIDDLEWARE = middleware
 ```
 
-Django вызывает `AppConfig.ready()` ровно один раз, во время `django.setup()` — а `django.setup()` всегда завершается *до того*, как `get_wsgi_application()` / `get_asgi_application()` вызовут `load_middleware()` для построения цепочки запрос/ответ. Именно этот порядок и позволяет `djo` добавить свой middleware в начало `settings.MIDDLEWARE` прямо в момент импорта — просто из факта присутствия в `INSTALLED_APPS`, без единой правки `urls.py` и без ручной записи в `MIDDLEWARE`.
+Django вызывает `AppConfig.ready()` ровно один раз, во время `django.setup()` — а `django.setup()` всегда завершается *до того*, как `get_wsgi_application()` / `get_asgi_application()` вызовут `load_middleware()` для построения цепочки запрос/ответ. Именно этот порядок и позволяет `djo` вставить свой middleware в `settings.MIDDLEWARE` прямо в момент импорта — просто из факта присутствия в `INSTALLED_APPS`, без единой правки `urls.py` и без ручной записи в `MIDDLEWARE`. Он ставится сразу после `SecurityMiddleware` (или в начало списка, если его нет), чтобы HTTPS-редиректы и security-заголовки покрывали и `/docs`.
 
 ## 2. Сам middleware
 
@@ -23,18 +29,26 @@ Django вызывает `AppConfig.ready()` ровно один раз, во в�
 # djo/middleware.py
 class DjangoAPIMiddleware:
     def __call__(self, request):
-        path = request.path.rstrip("/") or "/"
+        path = _normalize(request.path)
 
         if path == self.docs_url:
-            return HttpResponse(get_swagger_html(...), content_type="text/html")
-
+            return self._serve(request, self._docs)
         if path == self.openapi_url:
-            return JsonResponse(generate_openapi_schema(), ...)
-
+            return self._serve(request, self._openapi)
         return self.get_response(request)
+
+    def _serve(self, request, handler):
+        if not is_enabled():                    # DJO["ENABLED"], по умолчанию settings.DEBUG
+            return self.get_response(request)
+        if request.method not in ("GET", "HEAD"):
+            return HttpResponseNotAllowed(("GET", "HEAD"))
+        gate = get_gate()                        # необязательный колбэк DJO["GATE"]
+        if gate is not None and not gate(request):
+            return self.get_response(request)
+        return handler(request)
 ```
 
-Поскольку он добавлен в начало цепочки, он выполняется первым и перехватывает `/docs` и `/openapi.json` раньше, чем их вообще увидит обычная резолюция URL Django. Все остальные запросы проходят насквозь без изменений. Следствие: эти два пути никогда не попадают в схему как «обнаруженные» эндпоинты — они обрабатываются полностью в обход обхода URLconf.
+Он выполняется у вершины цепочки и перехватывает `/docs` и `/openapi.json` раньше, чем их вообще увидит обычная резолюция URL Django — но только для безопасных методов, только когда включён, и только если `GATE` разрешает. Все остальные запросы, как и отклонённые `GATE`, проходят насквозь без изменений. Следствие: эти два пути никогда не попадают в схему как «обнаруженные» эндпоинты — они обрабатываются полностью в обход обхода URLconf.
 
 ## 3. Генерация схемы
 
